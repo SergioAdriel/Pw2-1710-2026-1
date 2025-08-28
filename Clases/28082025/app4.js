@@ -8,6 +8,7 @@ console.log("El primer numero es: ",a);
 console.log("El segundo numero es: ",b);
 console.log("El tercer numero es: ",c);
 
+//Corregir con If's
 // Existe Math, es el que estoy usando
 console.log("\nEl mayor es:", Math.max(a, b, c));
 console.log("El menor es:", Math.min(a, b, c));
