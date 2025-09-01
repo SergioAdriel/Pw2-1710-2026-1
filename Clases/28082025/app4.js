@@ -8,10 +8,25 @@ console.log("El primer numero es: ",a);
 console.log("El segundo numero es: ",b);
 console.log("El tercer numero es: ",c);
 
-//Corregir con If's
-// Existe Math, es el que estoy usando
-console.log("\nEl mayor es:", Math.max(a, b, c));
-console.log("El menor es:", Math.min(a, b, c));
+// Aqui saco el mayor con if
+let mayor = a; // De inicio supongo que a es el mayor
+if (b > mayor) { // Si b es mayor que el que tengo guardado
+  mayor = b;
+}
+if (c > mayor) { // Si c es mayor que el que tengo guardado
+  mayor = c;
+}
+console.log("\nEl mayor es:", mayor);
+
+// Aqui saco el menor con if
+let menor = a; // De inicio supongo que a es el menor
+if (b < menor) { // Si b es menor que el que tengo guardado
+  menor = b;
+}
+if (c < menor) { // Si c es menor que el que tengo guardado
+  menor = c;
+}
+console.log("El menor es:", menor);
 
 // Aqui el ususario se le indica lo de las igualdades
 if (a === b && b === c) { // Aca es un AND, los 3 tienen que ser iguales
