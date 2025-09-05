@@ -8,15 +8,20 @@ function multiplicacion (n1,n2){
     return parseInt(n1)*parseInt(n2);
 }
 function division (n1,n2){
-    return parseInt(n1)/parseInt(n2);
+    if (parseInt(n2) === 0) {
+        console.log("Error: No se puede dividir entre 0");
+        return null; 
+    } else {
+        return parseInt(n1) / parseInt(n2);
+    }
 }
 var numero1 = prompt("Ingresa el Primer Numero:");
 var numero2 = prompt("Ingresa el Segundo Numero:");
 
 var resultadoSuma = sumar(numero1,numero2);
-var resultadoResta = resta(12,35);
-var resultadoMultiplicacion = multiplicacion(239,3290);
-var resultadoDivision = division(230,21);
+var resultadoResta = resta(numero1,numero2);
+var resultadoMultiplicacion = multiplicacion(numero1,numero2);
+var resultadoDivision = division(numero1,numero2);
 
 console.log(resultadoSuma);
 console.log(resultadoResta);
