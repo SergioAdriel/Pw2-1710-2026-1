@@ -12,9 +12,9 @@ while (seguir) {
     let nuevaFruta = prompt("Escribe el nombre de la fruta que quieres agregar:");
     if (nuevaFruta) {
       frutas.push(nuevaFruta); // Agrega la fruta al final de la lista
-      console.log(`Agregaste: ${nuevaFruta}`); // Imprime la ultima fruta
+      console.log(`Agregaste: ${nuevaFruta}`); // Imprime la ultima fruta, se imprime con el ${variable}
     } else {
-      console.log("No escribiste ninguna fruta.");
+      console.log("No escribiste ninguna fruta."); // Nos protegemos si el usario no digita nada
     }
   } else {
     seguir = false; // Rompe el ciclo si dice que no
