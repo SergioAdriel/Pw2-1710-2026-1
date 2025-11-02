@@ -1,0 +1,78 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #eef3f6;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+h2 {
+    color: #222;
+}
+
+div {
+    margin: 10px 0;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+input {
+    width: 280px;
+    padding: 8px;
+    border: 1px solid #bbb;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+input:focus {
+    border-color: #0078d7;
+    outline: none;
+}
+
+button {
+    padding: 10px 20px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    background-color: #0078d7;
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+button:hover:not(:disabled) {
+    background-color: #005ea6;
+}
+
+button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+#qr-code {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.qr-code {
+    border: 3px solid #0078d7;
+    border-radius: 10px;
+    padding: 10px;
+    background-color: white;
+}
+
+@media (max-width: 400px) {
+    input, button {
+        width: 90%;
+    }
+}

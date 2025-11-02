@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de QR</title>
+    <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+
+    <h2>Generar Codigo QR</h2>
+
+    <div>
+        <label>Nombre:</label>
+        <input id="input1" type="text" placeholder="Ej: Juan Perez">
+    </div>
+
+    <div>
+        <label>Correo:</label>
+        <input id="input2" type="email" placeholder="Ej: correo@ejemplo.com">
+    </div>
+
+    <div>
+        <label>Institucion:</label>
+        <input id="input3" type="text" placeholder="Ej: UNAM">
+    </div>
+
+    <div>
+        <label>Dependencia:</label>
+        <input id="input4" type="text" placeholder="Ej: FES Aragon">
+    </div>
+
+    <button id="btnGenerar">Generar QR</button>
+
+    <div id="qr-code"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
