@@ -1,0 +1,28 @@
+<HTML:5>
+<head>
+    <title>Mi Aplicación</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <h1>Bienvenido a Mi Aplicación</h1>
+    <p>Esta es la página principal.</p>
+</body>
+<h1>Listar Usurarios</h1>
+<tr>
+    <th>ID</th>
+    <th>Nombre</th>
+    <th>Email</th>
+    <th>Acciones</th>
+</tr>
+<% users.forEach(user => { %>
+    <tr>
+        <td><%= user.id %></td>
+        <td><%= user.name %></td>
+        <td><%= user.email %></td>
+        <td>
+            <a href="/edit/<%= user.id %>">Editar</a>
+            <a href="/delete/<$= user.id %>">Eliminar</a>
+        </td>
+    </tr>
+<% }); %>
+</HTML:5>

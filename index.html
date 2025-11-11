@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Pac vs Fantasma – Control / Estatus</title>
+<style>
+  :root{ --bg:#0f1220; --card:#171a2b; --muted:#9aa0b6; --fg:#e9ecff; --ok:#45d483; --warn:#ffcc66; --err:#ff7a7a; }
+  *{box-sizing:border-box}
+  body{ margin:0; font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif; color:var(--fg); background:var(--bg);
+        min-height:100svh; display:flex; align-items:center; justify-content:center; padding:16px; }
+  .wrap{ width:100%; max-width:900px; display:grid; gap:14px; grid-template-columns:1fr; }
+  @media(min-width:880px){ .wrap{ grid-template-columns:1.2fr 1fr; } }
+  .card{ background:var(--card); border:1px solid rgba(255,255,255,.08); border-radius:14px; padding:14px; }
+  .title{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:8px }
+  .title h1{ font-size:20px; margin:0 }
+  .pill{ display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border-radius:999px; font-size:13px; font-weight:700; color:#0b1225; }
+  .pac{ background:linear-gradient(90deg,#ffd166,#ff9f1c); } .ghost{ background:linear-gradient(90deg,#ff6b6b,#f7a1ff); }
+  .status{ display:flex; align-items:center; gap:10px; color:var(--muted); font-size:13px; margin:6px 0 12px }
+  .dot{ width:10px; height:10px; border-radius:50% } .ok{background:var(--ok)} .warn{background:var(--warn)} .err{background:var(--err)}
+  .btn{ appearance:none; border:none; border-radius:12px; padding:14px; font-weight:800; letter-spacing:.2px;
+        color:#0c1125; cursor:pointer; font-size:16px; background:linear-gradient(180deg,#7fd7ff,#b8c2ff); width:100%; }
+  .footer{ margin-top:12px; padding-top:10px; border-top:1px dashed rgba(255,255,255,.12); display:flex; align-items:center; justify-content:space-between; gap:10px; }
+  .tog{ display:flex; align-items:center; gap:8px; color:var(--muted); font-size:14px } .tog input{ width:18px; height:18px }
+  .kvbox{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px }
+  .kv{ background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); border-radius:10px; padding:10px 12px; font-size:13px }
+  .kv b{ display:block; color:#d9dfff; font-size:12px; margin-bottom:6px } .mono{ font-family: ui-monospace, Menlo, Consolas, monospace }
+  .score{ display:flex; align-items:center; gap:8px; margin:6px 0 10px }
+  .badge{ padding:6px 10px; border-radius:10px; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.08); font-weight:800; font-size:13px }
+  .list{ margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:8px; }
+  .row{ padding:10px 12px; border-radius:10px; background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.06);
+        display:flex; justify-content:space-between; gap:8px; }
+  .who{ font-weight:800 } .ts{ color:var(--muted); font-size:12px } .empty{ color:var(--muted); font-size:13px; padding:8px 0 }
+  .hide{ display:none !important; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Panel principal -->
+  <section class="card" id="panelMain">
+    <div class="title">
+      <h1 id="titleText">Pac vs Fantasma – Control</h1>
+      <div id="rolePill" class="pill pac">Rol: Pac-Man</div>
+    </div>
+
+    <div class="status">
+      <div id="wsDot" class="dot warn"></div><span id="wsTxt">WebSocket: conectando…</span>
+      <span>•</span>
+      <div id="httpDot" class="dot warn"></div><span id="httpTxt">/status: esperando…</span>
+    </div>
+
+    <!-- Botón único (control) -->
+    <div id="controlBox">
+      <button id="btnToggle" class="btn">CAMBIAR DIRECCIÓN</button>
+      <div class="footer" id="musicFooter">
+        <small style="color:var(--muted)">Abre en dos teléfonos: <span class="mono">/?p=1</span> (Pac-Man) y <span class="mono">/?p=2</span> (Fantasma)</small>
+        <label class="tog"><input id="snd" type="checkbox"> Música de fondo</label>
+      </div>
+    </div>
+
+    <!-- Datos (solo en estatus) -->
+    <div id="statusBox" class="kvbox hide">
+      <div class="kv"><b>Posición Pac-Man</b><div class="mono" id="pacPos">–</div></div>
+      <div class="kv"><b>Posición Fantasma</b><div class="mono" id="ghostPos">–</div></div>
+      <div class="kv"><b>Power-Up</b><div class="mono" id="powerOn">–</div></div>
+      <div class="kv"><b>Modo</b><div class="mono" id="mode">–</div></div>
+    </div>
+  </section>
+
+  <!-- Marcador / Historial (solo en estatus) -->
+  <section class="card hide" id="panelHistory">
+    <div class="title">
+      <h1>Marcador e Historial</h1>
+      <button id="btnClear" class="btn" style="padding:8px 12px; font-size:13px">Reiniciar historial</button>
+    </div>
+    <div class="score">
+      <div class="badge">Pac-Man: <span id="scorePac">0</span></div>
+      <div class="badge">Fantasma: <span id="scoreGhost">0</span></div>
+      <div class="badge">Rondas: <span id="rounds">0</span></div>
+    </div>
+    <ul id="history" class="list">
+      <li class="empty">No hay partidas aún. ¡Juega una ronda!</li>
+    </ul>
+  </section>
+</div>
+
+<script>
+/* ---------- Modo vista ---------- */
+const url = new URL(location.href);
+const p = url.searchParams.get('p');
+const vistaStatus = (p==='status');
+const role = (p==='2') ? '2' : '1';   // default Pac-Man
+
+const titleText = document.getElementById('titleText');
+const rolePill  = document.getElementById('rolePill');
+const controlBox= document.getElementById('controlBox');
+const statusBox = document.getElementById('statusBox');
+const panelHistory = document.getElementById('panelHistory');
+const musicFooter = document.getElementById('musicFooter');
+
+if(vistaStatus){
+  titleText.textContent = 'Pac vs Fantasma – Estatus';
+  rolePill.textContent  = 'Solo lectura';
+  rolePill.className    = 'pill';
+  controlBox.classList.add('hide');     // sin controles
+  statusBox.classList.remove('hide');   // muestra datos
+  panelHistory.classList.remove('hide'); // muestra historial
+}else{
+  rolePill.textContent = 'Rol: ' + (role==='2' ? 'Fantasma' : 'Pac-Man');
+  rolePill.className   = 'pill ' + (role==='2' ? 'ghost' : 'pac');
+}
+
+/* ---------- Indicadores ---------- */
+const wsDot = document.getElementById('wsDot');
+const wsTxt = document.getElementById('wsTxt');
+const httpDot = document.getElementById('httpDot');
+const httpTxt = document.getElementById('httpTxt');
+function setWsState(s){ wsDot.className='dot '+(s==='ok'?'ok':s==='err'?'err':'warn'); wsTxt.textContent = s==='ok'?'WebSocket: conectado': s==='err'?'WebSocket: error':'WebSocket: conectando…'; }
+function setHttpState(s){ httpDot.className='dot '+(s==='ok'?'ok':s==='err'?'err':'warn'); httpTxt.textContent = s==='ok'?'/status: OK': s==='err'?'/status: error':'/status: esperando…'; }
+
+/* ---------- WebSocket ---------- */
+let ws; let myid=Math.random().toString(16).slice(2);
+function conectarWS(){
+  setWsState('warn');
+  try{ ws=new WebSocket('ws://'+location.hostname+':81/'); }catch(e){ setWsState('err'); return; }
+  ws.onopen = ()=>setWsState('ok');
+  ws.onerror= ()=>setWsState('err');
+  ws.onclose= ()=>setWsState('warn');
+  ws.onmessage=(ev)=>{
+    const s=String(ev.data||'');
+    if(!s.startsWith('S:')) return;
+    if(vistaStatus){
+      if(s==='S:WIN:PAC') addMatch('Pac-Man');
+      else if(s==='S:WIN:GHOST') addMatch('Fantasma');
+      else if(s==='S:ROUND') incRound();
+    }
+  };
+}
+conectarWS();
+
+/* ---------- Control: botón único ---------- */
+if(!vistaStatus){
+  document.getElementById('btnToggle').addEventListener('click', ()=>{
+    if(ws && ws.readyState===1) ws.send(myid+':'+role+':TOGGLE'); else setWsState('err');
+  });
+
+  // Música de fondo (checkbox abajo)
+  let ac=null, musicaOn=false, bgmOsc=null, bgmGain=null, bgmTimer=null;
+  const snd=document.getElementById('snd');
+  function ensureAC(){ if(!ac){ try{ ac=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } if(ac&&ac.state==='suspended') ac.resume(); }
+  function gateOK(){ return musicaOn&&ac; }
+  function startBGM(){
+    if(!gateOK()||bgmTimer) return;
+    bgmOsc=ac.createOscillator(); bgmGain=ac.createGain();
+    bgmOsc.type='sine'; bgmOsc.frequency.value=98; bgmGain.gain.value=0.0;
+    bgmOsc.connect(bgmGain).connect(ac.destination); bgmOsc.start();
+    bgmTimer=setInterval(()=>{ if(!gateOK()) return; const t=ac.currentTime;
+      bgmGain.gain.cancelScheduledValues(t);
+      bgmGain.gain.setValueAtTime(0.0,t);
+      bgmGain.gain.linearRampToValueAtTime(0.12,t+0.08);
+      bgmGain.gain.exponentialRampToValueAtTime(0.001,t+0.45);
+    },600);
+  }
+  function stopBGM(){ if(bgmTimer){clearInterval(bgmTimer);bgmTimer=null;} if(bgmGain){try{bgmGain.gain.value=0;}catch(e){}} if(bgmOsc){try{bgmOsc.stop();}catch(e){}} }
+  snd.addEventListener('change', ()=>{ ensureAC(); musicaOn=snd.checked; if(musicaOn) startBGM(); else stopBGM(); });
+}
+
+/* ---------- Poll de estado (ambas vistas, pero solo pinta en Estatus) ---------- */
+const elPac=document.getElementById('pacPos');
+const elGhost=document.getElementById('ghostPos');
+const elPow=document.getElementById('powerOn');
+const elMode=document.getElementById('mode');
+
+async function poll(){
+  try{
+    const r=await fetch('/status',{cache:'no-store'});
+    if(!r.ok) throw new Error();
+    const j=await r.json();
+    setHttpState('ok');
+    if(vistaStatus){
+      elPac.textContent=j.pacPos ?? '-';
+      elGhost.textContent=j.ghostPos ?? '-';
+      elPow.textContent=j.powerOn?'ACTIVO':'APAGADO';
+      elMode.textContent=(j.mode===0?'JUEGO': j.mode===1?'ARCOÍRIS': j.mode===2?'TODO ROJO':'?');
+    }
+  }catch(e){ setHttpState('err'); }
+  finally{ setTimeout(poll,800); }
+}
+poll();
+
+/* ---------- Historial (solo Estatus) ---------- */
+const elScorePac=document.getElementById('scorePac');
+const elScoreGhost=document.getElementById('scoreGhost');
+const elRounds=document.getElementById('rounds');
+const ulHistory=document.getElementById('history');
+const btnClear=document.getElementById('btnClear');
+
+function cargarHist(){ try{ return JSON.parse(localStorage.getItem('pacghost_hist')||'[]'); }catch(_){ return []; } }
+function guardarHist(a){ localStorage.setItem('pacghost_hist', JSON.stringify(a)); }
+function renderHist(){
+  if(!vistaStatus) return;
+  const a=cargarHist(), pac=a.filter(x=>x.winner==='Pac-Man').length, gh=a.filter(x=>x.winner==='Fantasma').length;
+  elScorePac.textContent=pac; elScoreGhost.textContent=gh; elRounds.textContent=a.length;
+  ulHistory.innerHTML='';
+  if(a.length===0){ const li=document.createElement('li'); li.className='empty'; li.textContent='No hay partidas aún. ¡Juega una ronda!'; ulHistory.appendChild(li); return; }
+  for(const row of a.slice().reverse()){
+    const li=document.createElement('li'); li.className='row';
+    const left=document.createElement('div'), who=document.createElement('div'); who.className='who'; who.textContent=row.winner+' ganó';
+    const why=document.createElement('div'); why.style.color='var(--muted)'; why.style.fontSize='12px'; why.textContent=row.reason||'—';
+    left.appendChild(who); left.appendChild(why);
+    const right=document.createElement('div'); right.className='ts'; right.textContent=new Date(row.ts).toLocaleString();
+    li.appendChild(left); li.appendChild(right); ulHistory.appendChild(li);
+  }
+}
+function addMatch(winner){ if(!vistaStatus) return; const a=cargarHist(); a.push({winner, ts:Date.now(), reason:winner==='Pac-Man'?'Llegó a la meta (95–99)':'Atrapó a Pac-Man'}); guardarHist(a); renderHist(); }
+function incRound(){ /* opcional */ }
+if(vistaStatus){
+  btnClear.addEventListener('click', ()=>{ localStorage.removeItem('pacghost_hist'); renderHist(); });
+  renderHist();
+}
+</script>
+</body>
+</html>
