@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Mi Aplicación</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <h1>Hola UwU</h1>
+            <p class="subtitle">Panel sencillo de gestión de usuarios</p>
+        </header>
+
+        <main class="app-main">
+            <!-- Tarjeta de formulario -->
+            <section class="card">
+                <h2>Agregar usuario</h2>
+                <form action="/add-user" method="POST" class="form-grid">
+                    <div class="form-group">
+                        <label for="name">Nombre</label>
+                        <input
+                            type="text"
+                            id="name"
+                            name="name"
+                            placeholder="Nombre completo"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Correo electrónico</label>
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            placeholder="correo@dominio.com"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            Agregar usuario
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Tabla de usuarios -->
+            <section class="card">
+                <div class="card-header-row">
+                    <h2>Usuarios registrados</h2>
+                    <span class="badge">
+                        Total: <%= users.length %>
+                    </span>
+                </div>
+
+                <% if (users.length === 0) { %>
+                    <p class="empty-text">Aún no hay usuarios registrados.</p>
+                <% } else { %>
+                    <div class="table-wrapper">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nombre</th>
+                                    <th>Email</th>
+                                    <th class="col-actions">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% users.forEach(user => { %>
+                                    <tr>
+                                        <td><%= user.id %></td>
+                                        <td><%= user.name %></td>
+                                        <td><%= user.email %></td>
+                                        <td class="col-actions">
+                                            <a
+                                                href="/edit/<%= user.id %>"
+                                                class="btn btn-sm btn-secondary"
+                                            >
+                                                Editar
+                                            </a>
+                                            <a
+                                                href="/delete/<%= user.id %>"
+                                                class="btn btn-sm btn-danger"
+                                                onclick="return confirm('¿Seguro que deseas eliminar este usuario?');"
+                                            >
+                                                Eliminar
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                <% } %>
+            </section>
+        </main>
+
+        <footer class="app-footer">
+            <p>Hecho con las patas bro</p>
+        </footer>
+    </div>
+</body>
+</html>
