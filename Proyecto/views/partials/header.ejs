@@ -1,0 +1,24 @@
+<link rel="stylesheet" href="/materialize/css/materialize.min.css">
+<link rel="stylesheet" href="/nes/nes.min.css">
+<link rel="stylesheet" href="/styles.css">
+<script src="/materialize/js/materialize.min.js"></script>
+
+<nav class="blue lighten-3">
+    <div class="nav-wrapper container">
+        <a href="/" class="brand-logo">
+            <i class="nes-pokeball"></i> ChecoTCG 
+        </a>
+
+        <% if (user) { %>
+        <ul id="nav-mobile" class="right">
+            <li>
+                <form action="/logout" method="POST">
+                    <button class="nes-btn is-error">Salir</button>
+                </form>
+            </li>
+        </ul>
+        <% } %>
+    </div>
+</nav>
+
+<div class="container" style="margin-top:30px;">

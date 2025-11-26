@@ -1,0 +1,79 @@
+<%- include('partials/header') %>
+
+<div class="row" style="margin-top:40px;">
+    <div class="col s12 m6 offset-m3">
+
+        <style>
+            .hidden { display: none !important; }
+            .full { width: 100%; padding: 12px; }
+            .login-card {
+                background: #fff;
+                border-radius: 12px;
+                padding: 20px;
+                box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+            }
+        </style>
+
+        <div class="nes-container with-title login-card">
+            <p class="title">Iniciar sesión</p>
+
+            <% if (!validated) { %>
+
+            <form action="/login" method="POST">
+                <label>Correo</label>
+                <input type="email" name="email" required>
+
+                <label>Contraseña</label>
+                <input type="password" name="password" required>
+
+                <button class="nes-btn is-primary full" type="submit">Entrar</button>
+
+                <% if (notFound) { %>
+                <p style="margin-top:15px;color:#c00;text-align:center;">
+                    Usuario no encontrado
+                </p>
+                <% } %>
+            </form>
+
+            <% } else { %>
+
+            <h5 class="center">Usuario verificado</h5>
+
+            <div style="margin-top:20px; display:flex; flex-direction:column; gap:15px;">
+                <a href="/" class="nes-btn is-primary full">Entrar al sistema</a>
+
+                <button class="nes-btn is-success full"
+                    onclick="document.getElementById('addUserCard').classList.remove('hidden')">
+                    Agregar usuario
+                </button>
+            </div>
+
+            <div id="addUserCard" class="hidden" style="margin-top:25px;">
+                <h5 class="center">Nuevo usuario</h5>
+
+                <form action="/register-from-login" method="POST">
+                    <label>Nombre</label>
+                    <input type="text" name="name" required>
+
+                    <label>Email</label>
+                    <input type="email" name="email" required>
+
+                    <label>Contraseña</label>
+                    <input type="password" name="password" required>
+
+                    <div style="margin-top:15px; display:flex; gap:10px;">
+                        <button class="nes-btn is-success full">Guardar</button>
+                        <button type="button" class="nes-btn is-error full"
+                            onclick="document.getElementById('addUserCard').classList.add('hidden')">
+                            Cancelar
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer') %>

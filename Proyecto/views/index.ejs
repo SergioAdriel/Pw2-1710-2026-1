@@ -1,0 +1,122 @@
+<%- include('partials/header') %>
+
+<h4 class="center">Gestión de usuarios</h4>
+
+<div class="center" style="margin-bottom:20px;">
+    <a class="nes-btn is-success modal-trigger" href="#modalAdd">+ Agregar usuario</a>
+</div>
+
+<!-- MODAL AGREGAR -->
+<div id="modalAdd" class="modal">
+    <div class="modal-content">
+        <h5>Nuevo usuario</h5>
+        <form action="/add-user" method="POST">
+
+            <div class="input-field">
+                <input name="name" required>
+                <label>Nombre</label>
+            </div>
+
+            <div class="input-field">
+                <input name="email" type="email" required>
+                <label>Correo</label>
+            </div>
+
+            <div class="input-field">
+                <input name="password" type="password" required>
+                <label>Contraseña</label>
+            </div>
+
+            <div class="input-field">
+                <input name="birthday" class="datepicker" placeholder="DD/MM/AAAA">
+                <label>Cumpleaños</label>
+            </div>
+
+            <button class="nes-btn is-primary">Guardar</button>
+        </form>
+    </div>
+</div>
+
+<table class="striped centered responsive-table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Email</th>
+            <th>Cumpleaños</th>
+            <th class="actions-col">Acciones</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        <% users.forEach(u => { %>
+        <tr id="row-<%= u.id %>">
+
+            <td><%= u.id %></td>
+
+            <td>
+                <span class="view"><%= u.name %></span>
+                <input class="edit input-name-<%= u.id %>" value="<%= u.name %>">
+            </td>
+
+            <td>
+                <span class="view"><%= u.email %></span>
+                <input class="edit input-email-<%= u.id %>" value="<%= u.email %>">
+            </td>
+
+            <td>
+                <span class="view">
+                    <%= u.birthday ? u.birthday.toLocaleDateString("es-MX") : "—" %>
+                </span>
+
+                <input 
+                    class="edit datepicker input-bday-<%= u.id %>"
+                    value="<%= u.birthday ? u.birthday.toLocaleDateString('es-MX') : '' %>"
+                    placeholder="DD/MM/AAAA"
+                >
+            </td>
+
+            <td class="actions-col">
+
+                <!-- DESBLOQUEAR -->
+                <button class="nes-btn is-warning btn-small unlock-<%= u.id %>"
+                    onclick="unlockRow(<%= u.id %>)">Desbloquear</button>
+
+                <!-- EDITAR -->
+                <button class="nes-btn is-primary btn-small edit-btn-<%= u.id %> app-hide"
+                    onclick="enableEdit(<%= u.id %>)">Editar</button>
+
+                <!-- GUARDAR -->
+                <button class="nes-btn is-success btn-small save-<%= u.id %> app-hide"
+                    onclick="saveUser(<%= u.id %>)">Guardar</button>
+
+                <!-- CANCELAR -->
+                <button class="nes-btn is-error btn-small cancel-<%= u.id %> app-hide"
+                    onclick="cancelEdit(<%= u.id %>)">Cancelar</button>
+
+                <!-- ELIMINAR -->
+                <button class="nes-btn is-error btn-small delete-btn-<%= u.id %> app-hide"
+                    onclick="startDelete(<%= u.id %>)">Eliminar</button>
+
+                <!-- CONFIRMAR ELIMINAR -->
+                <button class="nes-btn is-success btn-small confirm-del-<%= u.id %> app-hide"
+                    onclick="confirmDelete(<%= u.id %>)">Confirmar</button>
+
+                <!-- CANCELAR ELIMINAR -->
+                <button class="nes-btn is-error btn-small cancel-del-<%= u.id %> app-hide"
+                    onclick="cancelDelete(<%= u.id %>)">Cancelar</button>
+
+                <!-- BLOQUEAR -->
+                <button class="nes-btn is-dark btn-small block-btn-<%= u.id %> app-hide"
+                    onclick="blockRow(<%= u.id %>)">Bloquear</button>
+
+            </td>
+
+        </tr>
+        <% }) %>
+    </tbody>
+</table>
+
+<script src="/main.js"></script>
+
+<%- include('partials/footer') %>
