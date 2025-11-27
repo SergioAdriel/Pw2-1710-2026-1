@@ -3,77 +3,93 @@
 <div class="row" style="margin-top:40px;">
     <div class="col s12 m6 offset-m3">
 
-        <style>
-            .hidden { display: none !important; }
-            .full { width: 100%; padding: 12px; }
-            .login-card {
-                background: #fff;
-                border-radius: 12px;
-                padding: 20px;
-                box-shadow: 0 8px 25px rgba(0,0,0,0.08);
-            }
-        </style>
-
         <div class="nes-container with-title login-card">
-            <p class="title">Iniciar sesión</p>
+            <p class="title login-title">Iniciar sesión</p>
 
+            <!-- Sección: formulario de inicio de sesión (usuario no verificado) -->
             <% if (!validated) { %>
 
             <form action="/login" method="POST">
                 <label>Correo</label>
-                <input type="email" name="email" required>
+                <input type="email" name="email" value="<%= email %>" required>
 
                 <label>Contraseña</label>
-                <input type="password" name="password" required>
+                <input type="password" name="password" value="<%= password %>" required>
 
                 <button class="nes-btn is-primary full" type="submit">Entrar</button>
-
-                <% if (notFound) { %>
-                <p style="margin-top:15px;color:#c00;text-align:center;">
-                    Usuario no encontrado
-                </p>
-                <% } %>
             </form>
 
+            <% if (notFound) { %>
+            <script>
+                document.addEventListener("DOMContentLoaded", () => {
+                    M.toast({html: "Credenciales incorrectas", classes: "red darken-2"});
+                });
+            </script>
+            <% } %>
+
             <% } else { %>
+            <!-- Sección: usuario verificado (mostrar opciones) -->
 
-            <h5 class="center">Usuario verificado</h5>
+            <h5 class="center">Acceso verificado</h5>
 
-            <div style="margin-top:20px; display:flex; flex-direction:column; gap:15px;">
-                <a href="/" class="nes-btn is-primary full">Entrar al sistema</a>
+            <h6 class="center">Bienvenido <%= user.email %></h6>
 
-                <button class="nes-btn is-success full"
-                    onclick="document.getElementById('addUserCard').classList.remove('hidden')">
-                    Agregar usuario
-                </button>
-            </div>
+            <div class="center" style="margin-top:20px;">
 
-            <div id="addUserCard" class="hidden" style="margin-top:25px;">
-                <h5 class="center">Nuevo usuario</h5>
+                <a href="/" class="nes-btn is-primary" style="width:70%;">Entrar al sistema</a>
 
-                <form action="/register-from-login" method="POST">
-                    <label>Nombre</label>
-                    <input type="text" name="name" required>
+                <br><br>
 
-                    <label>Email</label>
-                    <input type="email" name="email" required>
+                <!-- Botón: abrir modal de registro -->
+                <a href="#modalNewUser" class="nes-btn is-success modal-trigger" style="width:70%;">
+                    Registrar nuevo usuario
+                </a>
 
-                    <label>Contraseña</label>
-                    <input type="password" name="password" required>
-
-                    <div style="margin-top:15px; display:flex; gap:10px;">
-                        <button class="nes-btn is-success full">Guardar</button>
-                        <button type="button" class="nes-btn is-error full"
-                            onclick="document.getElementById('addUserCard').classList.add('hidden')">
-                            Cancelar
-                        </button>
-                    </div>
-                </form>
             </div>
 
             <% } %>
+
+            <!-- Toast global: mostrar mensajes informativos -->
+            <% if (toast) { %>
+            <script>
+                document.addEventListener("DOMContentLoaded", () => {
+                    M.toast({html: "<%= toast %>", classes: "blue darken-2"});
+                });
+            </script>
+            <% } %>
+
         </div>
+
     </div>
 </div>
+
+<!-- Modal: formulario para registrar nuevo usuario -->
+<div id="modalNewUser" class="modal">
+    <div class="modal-content">
+        <h4>Registrar usuario nuevo</h4>
+
+        <form action="/register-from-login" method="POST">
+
+            <label>Correo</label>
+            <input type="email" name="email" required>
+
+            <label>Contraseña</label>
+            <input type="password" name="password" required>
+
+            <br>
+
+            <button class="nes-btn is-success">Guardar</button>
+
+            <a class="modal-close nes-btn is-error" style="margin-left:10px;">Cancelar</a>
+        </form>
+    </div>
+</div>
+
+<!-- Inicializar modales de Materialize al cargar el DOM -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    M.Modal.init(document.querySelectorAll('.modal'));
+});
+</script>
 
 <%- include('partials/footer') %>

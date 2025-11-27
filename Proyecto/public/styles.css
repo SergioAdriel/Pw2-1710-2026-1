@@ -1,37 +1,24 @@
-/* ============================================
-   INTEGRACIÓN MATERIALIZE + NES.css
-   ============================================ */
-
-/* Fix de márgenes en inputs dentro de NES */
-.nes-container .input-field {
-    margin-top: 10px;
-    margin-bottom: 25px;
-}
-
-/* Botones NES centrados */
+/* Botones y ajustes generales de tablas */
 .nes-btn {
     margin: 5px;
 }
 
-/* Botones pequeños de tabla */
 .btn-small {
     padding: 4px 10px !important;
-    font-size: 0.8rem !important;
+    font-size: .85rem !important;
 }
 
-/* Tablas más limpias */
 table.striped > tbody > tr:nth-child(odd) {
     background-color: #f4f4f4;
 }
 
+/* Celdas: espaciado y alineación vertical */
 td, th {
     padding: 12px !important;
-    vertical-align: middle !important;
+    vertical-align: middle;
 }
 
-/* ===========================
-   EDITAR INLINE
-   =========================== */
+/* Edición en línea: mostrar/ocultar vistas y campos editables */
 .edit {
     display: none !important;
 }
@@ -44,153 +31,46 @@ td, th {
     display: inline-block !important;
 }
 
-/* Ocultar rápido */
+/* Clase para ocultar elementos en la interfaz */
 .app-hide {
     display: none !important;
 }
 
-/* ===========================
-   MODAL
-   =========================== */
-.modal {
-    max-height: 85% !important;
-    border-radius: 10px;
-}
-
-.modal .input-field input {
-    margin-bottom: 10px;
-}
-
-/* ===========================
-   TITULOS
-   =========================== */
-h4, h5 {
-    font-weight: 600;
-    margin-bottom: 20px;
-}
-
-/* ===========================
-   TABLA
-   =========================== */
+/* Columna de acciones: ancho fijo y centrado */
 .actions-col {
-    width: 230px;
+    width: 270px;
     text-align: center !important;
 }
 
-.responsive-table td {
-    vertical-align: middle !important;
+/* Tarjeta de login: espaciado y esquinas redondeadas */
+.login-card {
+    padding: 20px;
+    border-radius: 12px;
 }
 
-/* ===========================
-   HEADER / FOOTER
-   =========================== */
-nav .brand-logo {
-    font-size: 1.4rem !important;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+/* Datepicker: color del display y botones, y prioridad de z-index */
+.datepicker-date-display {
+    background-color: #1565c0 !important;
 }
 
-nav .brand-logo .nes-icon {
-    transform: scale(1.5);
+.datepicker-cancel,
+.datepicker-done {
+    color: #1565c0 !important;
 }
 
-footer.page-footer {
-    padding-top: 10px;
-    padding-bottom: 10px;
+.datepicker-modal,
+.datepicker-container {
+    z-index: 99999 !important;
 }
 
-footer.page-footer p {
-    margin: 0;
-}
-
-footer.page-footer .nes-icon {
-    vertical-align: middle;
-}
-
-/* ===========================
-   FORMULARIOS GENERALES
-   =========================== */
-form .input-field {
-    margin-top: 15px;
-    margin-bottom: 20px;
-}
-
-form .input-field input[type="text"],
-form .input-field input[type="email"],
-form .input-field input[type="password"],
-form .input-field input[type="date"] {
-    padding: 10px;
-    font-size: 1rem;
-}
-
-form .input-field label {
-    font-size: 1rem;
-}
-
-/* ===========================
-   DATEPICKER FIX (EL DEFINITIVO)
-   =========================== */
-
-/* El input debe ser manejable */
-.datepicker {
-    background-color: white !important;
-    cursor: pointer !important;
-}
-
-/* Evitar que NES.css tape el calendario */
-td,
-tr,
-.nes-container,
-.modal,
-.card {
+/* Permitir overflow visible para que el datepicker no quede oculto por componentes NES */
+td, tr, .nes-container, .card, .modal {
     overflow: visible !important;
 }
 
-/* El calendario debe estar SIEMPRE arriba */
-.datepicker-modal,
-.datepicker-container {
-    z-index: 999999 !important;
+/* Mensaje de bienvenida centrado y en negrita */
+.welcome-message {
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 10px;
 }
-
-/* ===========================
-   CARDS Y COMPONENTES
-   =========================== */
-.card {
-    border-radius: 10px;
-}
-
-.card .card-content {
-    padding: 20px;
-}
-
-.card .card-title {
-    font-size: 1.4rem;
-    margin-bottom: 15px;
-}
-
-/* ===========================
-   NOTIFICACIONES
-   =========================== */
-.toast {
-    font-size: 1rem;
-    padding: 15px 25px;
-}
-
-.toast-success { background-color: #4caf50 !important; color: white !important; }
-.toast-error { background-color: #f44336 !important; color: white !important; }
-.toast-info { background-color: #2196f3 !important; color: white !important; }
-.toast-warning { background-color: #ff9800 !important; color: white !important; }
-
-/* ===========================
-   Paginación
-   =========================== */
-.pagination li.active a {
-    background-color: #2196f3 !important;
-    color: white !important;
-}
-
-/* ===========================
-   Ajustes varios finales
-   =========================== */
-.center { text-align: center; }

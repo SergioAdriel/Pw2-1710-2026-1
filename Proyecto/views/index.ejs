@@ -1,122 +1,371 @@
 <%- include('partials/header') %>
 
-<h4 class="center">Gestión de usuarios</h4>
+<div class="container" style="margin-top:20px;">
 
-<div class="center" style="margin-bottom:20px;">
-    <a class="nes-btn is-success modal-trigger" href="#modalAdd">+ Agregar usuario</a>
+    <h4 class="center">Gestión de usuarios</h4>
+
+    <!-- Botón Agregar: abre modal para crear un nuevo usuario -->
+    <div class="center" style="margin: 16px 0 24px;">
+        <a class="nes-btn is-success modal-trigger" href="#modalAdd">+ Agregar usuario</a>
+    </div>
+
+    <!-- Tabla de usuarios -->
+    <table class="striped centered responsive-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Correo</th>
+                <th>Cumpleaños</th>
+                <th class="actions-col">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% users.forEach(u => { %>
+            <tr id="row-<%= u.id %>">
+                <td><%= u.id %></td>
+
+                <!-- Nombre: vista y campo de edición -->
+                <td>
+                    <span class="view name-<%= u.id %>"><%= u.name || '—' %></span>
+                    <input class="edit browser-default input-name-<%= u.id %>" value="<%= u.name || '' %>">
+                </td>
+
+                <!-- Correo: solo editable si es la fila del usuario conectado -->
+                <td>
+                    <span class="view email-<%= u.id %>"><%= u.email %></span>
+                    <% const isOwnRow = (loggedUser && Number(loggedUser.id) === Number(u.id)); %>
+                    <input
+                        class="edit browser-default input-email-<%= u.id %>"
+                        value="<%= u.email %>"
+                        <%= isOwnRow ? '' : 'disabled' %>
+                        title="<%= isOwnRow ? '' : 'Solo puedes cambiar TU propio correo' %>"
+                    >
+                </td>
+
+                <!-- Cumpleaños: vista formateada y campo con datepicker -->
+                <td>
+                    <span class="view bday-<%= u.id %>"><%= u.birthday ? u.birthday.toLocaleDateString('es-MX') : '—' %></span>
+                    <input
+                        class="edit datepicker browser-default input-bday-<%= u.id %>"
+                        placeholder="DD/MM/AAAA"
+                        value="<%= u.birthday ? u.birthday.toLocaleDateString('es-MX') : '' %>"
+                    >
+                </td>
+
+                <!-- Acciones: botones según estado de la fila -->
+                <td class="actions-col">
+
+                    <!-- Bloqueado: mostrar solo botón de desbloquear -->
+                    <button
+                        class="nes-btn is-warning btn-small state-locked unlock-<%= u.id %>"
+                        onclick="unlockRow(<%= u.id %>)">
+                        Desbloquear
+                    </button>
+
+                    <!-- Desbloqueado: opciones editar, eliminar, bloquear y cambiar contraseña (si es mi fila) -->
+                    <div class="state-unlocked app-hide state-unlocked-<%= u.id %>">
+                        <button class="nes-btn is-primary btn-small edit-btn-<%= u.id %>"
+                                        onclick="enableEdit(<%= u.id %>)">Editar</button>
+
+                        <button class="nes-btn is-error btn-small delete-btn-<%= u.id %>"
+                                        onclick="openDeleteModal(<%= u.id %>, '<%- u.email %>')">Eliminar</button>
+
+                        <button class="nes-btn btn-small" onclick="blockRow(<%= u.id %>)">Bloquear</button>
+
+                        <% if (isOwnRow) { %>
+                            <button class="nes-btn is-warning btn-small"
+                                            onclick="openPwdModal(<%= u.id %>, '<%- u.email %>')">
+                                Cambiar contraseña
+                            </button>
+                        <% } %>
+                    </div>
+
+                    <!-- Editando: guardar o cancelar cambios -->
+                    <div class="state-editing app-hide state-editing-<%= u.id %>">
+                        <button class="nes-btn is-success btn-small save-<%= u.id %>"
+                                        onclick="saveUser(<%= u.id %>)">Guardar</button>
+
+                        <button class="nes-btn is-error btn-small cancel-<%= u.id %>"
+                                        onclick="cancelEdit(<%= u.id %>)">Cancelar</button>
+                    </div>
+
+                </td>
+            </tr>
+            <% }) %>
+        </tbody>
+    </table>
 </div>
 
-<!-- MODAL AGREGAR -->
+<!-- Modal: Agregar usuario -->
 <div id="modalAdd" class="modal">
     <div class="modal-content">
         <h5>Nuevo usuario</h5>
-        <form action="/add-user" method="POST">
 
-            <div class="input-field">
-                <input name="name" required>
-                <label>Nombre</label>
+        <form id="formAdd" action="/add-user" method="POST">
+
+            <div class="input-field" style="margin-top: 20px;">
+                <label for="add_name" class="active">Nombre</label>
+                <input id="add_name" name="name" type="text">
             </div>
 
-            <div class="input-field">
-                <input name="email" type="email" required>
-                <label>Correo</label>
+            <div class="input-field" style="margin-top: 25px;">
+                <label for="add_email" class="active">Correo</label>
+                <input id="add_email" name="email" type="email" required>
             </div>
 
-            <div class="input-field">
-                <input name="password" type="password" required>
-                <label>Contraseña</label>
+            <div class="input-field" style="margin-top: 25px;">
+                <label for="add_password" class="active">Contraseña</label>
+                <input id="add_password" name="password" type="password" required>
             </div>
 
-            <div class="input-field">
-                <input name="birthday" class="datepicker" placeholder="DD/MM/AAAA">
-                <label>Cumpleaños</label>
+            <div class="input-field" style="margin-top: 25px;">
+                <label for="add_birthday" class="active">Cumpleaños</label>
+                <input id="add_birthday" name="birthday" class="datepicker" placeholder="DD/MM/AAAA">
             </div>
 
-            <button class="nes-btn is-primary">Guardar</button>
+            <div style="margin-top: 25px;">
+                <button class="nes-btn is-primary">Guardar</button>
+                <a class="modal-close nes-btn is-error" style="margin-left:8px;">Cancelar</a>
+            </div>
+
         </form>
     </div>
 </div>
 
-<table class="striped centered responsive-table">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Nombre</th>
-            <th>Email</th>
-            <th>Cumpleaños</th>
-            <th class="actions-col">Acciones</th>
-        </tr>
-    </thead>
+<!-- Modal: Eliminar usuario -->
+<div id="modalDelete" class="modal">
+    <div class="modal-content">
+        <h5>Eliminar usuario</h5>
+        <p>Confirma la contraseña del usuario <strong id="delEmail"></strong> para eliminarlo.</p>
 
-    <tbody>
-        <% users.forEach(u => { %>
-        <tr id="row-<%= u.id %>">
+        <input type="password" id="delPassword" placeholder="Contraseña del usuario">
+        <input type="hidden" id="delUserId">
 
-            <td><%= u.id %></td>
+        <div style="margin-top:12px;">
+            <button class="nes-btn is-error" onclick="confirmDelete()">Eliminar</button>
+            <a class="modal-close nes-btn" style="margin-left:8px;">Cancelar</a>
+        </div>
+    </div>
+</div>
 
-            <td>
-                <span class="view"><%= u.name %></span>
-                <input class="edit input-name-<%= u.id %>" value="<%= u.name %>">
-            </td>
+<!-- Modal: Cambiar contraseña (solo para mi usuario) -->
+<div id="modalPwd" class="modal">
+    <div class="modal-content">
+        <h5>Cambiar contraseña</h5>
+        <p>Usuario: <strong id="pwdEmail"></strong></p>
 
-            <td>
-                <span class="view"><%= u.email %></span>
-                <input class="edit input-email-<%= u.id %>" value="<%= u.email %>">
-            </td>
+        <input type="password" id="pwdCurrent" placeholder="Contraseña actual">
+        <input type="password" id="pwdNew" placeholder="Nueva contraseña">
+        <input type="hidden" id="pwdUserId">
 
-            <td>
-                <span class="view">
-                    <%= u.birthday ? u.birthday.toLocaleDateString("es-MX") : "—" %>
-                </span>
+        <div style="margin-top:12px;">
+            <button class="nes-btn is-success" onclick="confirmPwdChange()">Actualizar</button>
+            <a class="modal-close nes-btn is-error" style="margin-left:8px;">Cancelar</a>
+        </div>
+    </div>
+</div>
 
-                <input 
-                    class="edit datepicker input-bday-<%= u.id %>"
-                    value="<%= u.birthday ? u.birthday.toLocaleDateString('es-MX') : '' %>"
-                    placeholder="DD/MM/AAAA"
-                >
-            </td>
+<!-- Toast enviado desde el servidor (opcional) -->
+<% if (toast) { %>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    M.toast({ html: "<%= toast %>", classes: "blue darken-2 white-text" });
+});
+</script>
+<% } %>
 
-            <td class="actions-col">
+<script>
+/* Helpers: toasts */
+function toastOk(msg)   { M.toast({ html: msg, classes: "green darken-2 white-text" }); }
+function toastErr(msg)  { M.toast({ html: msg, classes: "red darken-2 white-text" }); }
 
-                <!-- DESBLOQUEAR -->
-                <button class="nes-btn is-warning btn-small unlock-<%= u.id %>"
-                    onclick="unlockRow(<%= u.id %>)">Desbloquear</button>
+/* Gestión de estados por fila */
+function unlockRow(id) {
+    // Mostrar opciones de fila desbloqueada
+    document.querySelector(`.unlock-${id}`).classList.add('app-hide');
+    document.querySelector(`.state-unlocked-${id}`).classList.remove('app-hide');
+}
 
-                <!-- EDITAR -->
-                <button class="nes-btn is-primary btn-small edit-btn-<%= u.id %> app-hide"
-                    onclick="enableEdit(<%= u.id %>)">Editar</button>
+function blockRow(id) {
+    // Salir de edición (si aplica) y volver a estado bloqueado
+    cancelEdit(id, /*toUnlocked*/ false);
+    document.querySelector(`.state-unlocked-${id}`).classList.add('app-hide');
+    document.querySelector(`.unlock-${id}`).classList.remove('app-hide');
+}
 
-                <!-- GUARDAR -->
-                <button class="nes-btn is-success btn-small save-<%= u.id %> app-hide"
-                    onclick="saveUser(<%= u.id %>)">Guardar</button>
+function enableEdit(id) {
+    // Activar modo edición: ocultar controles de desbloqueado y mostrar controles de edición
+    document.querySelector(`.state-unlocked-${id}`).classList.add('app-hide');
+    document.querySelector(`.state-editing-${id}`).classList.remove('app-hide');
 
-                <!-- CANCELAR -->
-                <button class="nes-btn is-error btn-small cancel-<%= u.id %> app-hide"
-                    onclick="cancelEdit(<%= u.id %>)">Cancelar</button>
+    // Marcar fila como en edición para alternar vistas (.view vs .edit)
+    const row = document.getElementById(`row-${id}`);
+    row.classList.add('editing');
 
-                <!-- ELIMINAR -->
-                <button class="nes-btn is-error btn-small delete-btn-<%= u.id %> app-hide"
-                    onclick="startDelete(<%= u.id %>)">Eliminar</button>
+    // Inicializar datepicker cuando el input ya está visible
+    setTimeout(() => {
+        const input = row.querySelector(`.input-bday-${id}`);
+        if (input) {
+            M.Datepicker.init(input, {
+                format: "dd/mm/yyyy",
+                autoClose: true,
+                firstDay: 1,
+                i18n: {
+                    cancel: "Cancelar",
+                    clear: "Limpiar",
+                    done: "OK",
+                    months: ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'],
+                    monthsShort: ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'],
+                    weekdaysShort: ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb']
+                }
+            });
+        }
+    }, 120);
+}
 
-                <!-- CONFIRMAR ELIMINAR -->
-                <button class="nes-btn is-success btn-small confirm-del-<%= u.id %> app-hide"
-                    onclick="confirmDelete(<%= u.id %>)">Confirmar</button>
+function cancelEdit(id, toUnlocked = true) {
+    // Salir de modo edición y restaurar los controles adecuados
+    const row = document.getElementById(`row-${id}`);
+    row.classList.remove('editing');
 
-                <!-- CANCELAR ELIMINAR -->
-                <button class="nes-btn is-error btn-small cancel-del-<%= u.id %> app-hide"
-                    onclick="cancelDelete(<%= u.id %>)">Cancelar</button>
+    document.querySelector(`.state-editing-${id}`).classList.add('app-hide');
+    if (toUnlocked) {
+        document.querySelector(`.state-unlocked-${id}`).classList.remove('app-hide');
+    } else {
+        // Mostrar botón "Desbloquear" cuando no queremos volver a estado desbloqueado completo
+        document.querySelector(`.unlock-${id}`).classList.remove('app-hide');
+    }
+}
 
-                <!-- BLOQUEAR -->
-                <button class="nes-btn is-dark btn-small block-btn-<%= u.id %> app-hide"
-                    onclick="blockRow(<%= u.id %>)">Bloquear</button>
+/* Guardar edición de usuario */
+async function saveUser(id) {
+    const name     = document.querySelector(`.input-name-${id}`).value;
+    const emailEl  = document.querySelector(`.input-email-${id}`);
+    const birthday = document.querySelector(`.input-bday-${id}`).value;
 
-            </td>
+    // Solo enviamos email si el campo está habilitado (es mi fila)
+    let email = null;
+    if (emailEl && !emailEl.disabled) {
+            email = emailEl.value;
+    }
 
-        </tr>
-        <% }) %>
-    </tbody>
-</table>
+    try {
+        const res = await fetch(`/api/update/${id}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name, birthday, email })  // email puede ser null
+        });
 
-<script src="/main.js"></script>
+        const out = await res.json();
+        if (!res.ok) {
+            toastErr(out.error || "Error al actualizar");
+            return;
+        }
+
+        toastOk("Usuario actualizado");
+        setTimeout(() => location.reload(), 600);
+    } catch (e) {
+        toastErr("Error de conexión");
+    }
+}
+
+/* Eliminar usuario: inicialización y confirmación */
+let delModalInst;
+document.addEventListener("DOMContentLoaded", () => {
+    // Inicializar los modals de Materialize
+    M.Modal.init(document.querySelectorAll('.modal'));
+    delModalInst = M.Modal.getInstance(document.getElementById('modalDelete'));
+
+    // Inicializar datepicker del modal de agregar
+    const addPicker = document.querySelector('#modalAdd .datepicker');
+    if (addPicker) {
+        M.Datepicker.init(addPicker, {
+            format: "dd/mm/yyyy",
+            autoClose: true,
+            firstDay: 1,
+            i18n: {
+                cancel: "Cancelar",
+                clear: "Limpiar",
+                done: "OK",
+                months: ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'],
+                monthsShort: ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'],
+                weekdaysShort: ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb']
+            }
+        });
+    }
+});
+
+function openDeleteModal(id, email) {
+    // Preparar y abrir modal de confirmación de eliminación
+    document.getElementById('delUserId').value = id;
+    document.getElementById('delEmail').innerText = email;
+    document.getElementById('delPassword').value = '';
+    const inst = M.Modal.getInstance(document.getElementById('modalDelete'));
+    inst.open();
+}
+
+async function confirmDelete() {
+    // Enviar petición para eliminar usuario con contraseña de confirmación
+    const id = document.getElementById('delUserId').value;
+    const password = document.getElementById('delPassword').value;
+
+    try {
+        const res = await fetch(`/api/delete/${id}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ password })
+        });
+        const out = await res.json();
+
+        if (!res.ok) {
+            toastErr(out.error || "No se pudo eliminar");
+            return;
+        }
+
+        toastOk("Usuario eliminado");
+        setTimeout(() => location.reload(), 600);
+    } catch (e) {
+        toastErr("Error de conexión");
+    }
+}
+
+/* Cambiar contraseña (solo para mi fila) */
+function openPwdModal(id, email) {
+    // Preparar y abrir modal de cambio de contraseña
+    document.getElementById('pwdUserId').value = id;
+    document.getElementById('pwdEmail').innerText = email;
+    document.getElementById('pwdCurrent').value = '';
+    document.getElementById('pwdNew').value = '';
+    const inst = M.Modal.getInstance(document.getElementById('modalPwd'));
+    inst.open();
+}
+
+async function confirmPwdChange() {
+    // Enviar petición para actualizar contraseña
+    const id = document.getElementById('pwdUserId').value;
+    const currentPassword = document.getElementById('pwdCurrent').value;
+    const newPassword = document.getElementById('pwdNew').value;
+
+    try {
+        const res = await fetch(`/api/change-password/${id}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ currentPassword, newPassword })
+        });
+        const out = await res.json();
+
+        if (!res.ok) {
+            toastErr(out.error || "No se pudo cambiar la contraseña");
+            return;
+        }
+
+        toastOk("Contraseña actualizada");
+        setTimeout(() => location.reload(), 600);
+    } catch (e) {
+        toastErr("Error de conexión");
+    }
+}
+</script>
 
 <%- include('partials/footer') %>
